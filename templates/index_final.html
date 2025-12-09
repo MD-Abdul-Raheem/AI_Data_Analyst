@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Data Analyst - Complete Analysis Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .upload-section { background: white; border-radius: 15px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .upload-box { border: 3px dashed #667eea; border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .upload-box:hover { background: #f8f9ff; border-color: #764ba2; }
+        .upload-box input { display: none; }
+        .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 40px; border-radius: 25px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .results { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { padding: 12px 24px; background: #f0f0f0; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .insight-box { background: #f8f9ff; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+        .chart-container { margin: 20px 0; text-align: center; }
+        .chart-container img { max-width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat-card h3 { font-size: 2em; margin-bottom: 5px; }
+        .stat-card p { opacity: 0.9; }
+        .loading { text-align: center; padding: 40px; display: none; }
+        .loading-spinner { border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .ai-insights { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 10px; margin: 20px 0; }
+        .ai-insights h3 { margin-bottom: 15px; }
+        .ai-insights p { line-height: 1.8; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Data Analyst</h1>
+            <p>Complete Data Analysis with AI-Powered Insights</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <h2>📊 Upload Your Dataset</h2>
+                <p>Supports CSV, Excel, JSON files (up to 100MB)</p>
+                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json">
+            </div>
+            <button class="btn" onclick="analyzeData()">🚀 Analyze Data</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 20px; color: white; font-size: 18px;">Analyzing your data...</p>
+        </div>
+
+        <div class="results" id="results">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('summary')">📋 Summary</button>
+                <button class="tab" onclick="showTab('insights')">💡 Insights</button>
+                <button class="tab" onclick="showTab('charts')">📊 Charts</button>
+                <button class="tab" onclick="showTab('stats')">📈 Statistics</button>
+                <button class="tab" onclick="showTab('cleaning')">🧹 Cleaning</button>
+                <button class="tab" onclick="showTab('ai')">🤖 AI Insights</button>
+            </div>
+
+            <div id="tab-summary" class="tab-content active">
+                <h2>Executive Summary</h2>
+                <div id="summary-content"></div>
+            </div>
+
+            <div id="tab-insights" class="tab-content">
+                <h2>Business Insights</h2>
+                <div id="insights-content"></div>
+            </div>
+
+            <div id="tab-charts" class="tab-content">
+                <h2>Visualizations</h2>
+                <div id="charts-content"></div>
+            </div>
+
+            <div id="tab-stats" class="tab-content">
+                <h2>Statistical Analysis</h2>
+                <div id="stats-content"></div>
+            </div>
+
+            <div id="tab-cleaning" class="tab-content">
+                <h2>Data Cleaning Report</h2>
+                <div id="cleaning-content"></div>
+            </div>
+
+            <div id="tab-ai" class="tab-content">
+                <h2>AI-Powered Insights</h2>
+                <div id="ai-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        async function analyzeData() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select a file first!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+
+                displayResults(data);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+            } catch (error) {
+                alert('Error analyzing data: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            // Summary
+            const summaryHTML = `
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>${data.understanding.shape[0].toLocaleString()}</h3>
+                        <p>Total Records</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.understanding.shape[1]}</h3>
+                        <p>Columns</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.cleaning.duplicates_removed}</h3>
+                        <p>Duplicates Removed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${Object.keys(data.cleaning.outliers_detected).length}</h3>
+                        <p>Columns with Outliers</p>
+                    </div>
+                </div>
+                <div class="insight-box">
+                    <h3>📊 ${data.executive_summary}</h3>
+                </div>
+            `;
+            document.getElementById('summary-content').innerHTML = summaryHTML;
+
+            // Insights
+            const insightsHTML = data.insights.map(insight => 
+                `<div class="insight-box">✓ ${insight}</div>`
+            ).join('');
+            document.getElementById('insights-content').innerHTML = insightsHTML;
+
+            // Charts
+            const chartsHTML = data.charts.map(chart => `
+                <div class="chart-container">
+                    <h3>${chart.title}</h3>
+                    <img src="data:image/png;base64,${chart.image}" alt="${chart.title}">
+                </div>
+            `).join('');
+            document.getElementById('charts-content').innerHTML = chartsHTML || '<p>No charts generated</p>';
+
+            // Statistics
+            const statsHTML = `
+                <h3>Descriptive Statistics</h3>
+                <pre>${JSON.stringify(data.eda.descriptive_stats, null, 2)}</pre>
+                <h3>Correlations</h3>
+                <pre>${JSON.stringify(data.eda.correlations, null, 2)}</pre>
+            `;
+            document.getElementById('stats-content').innerHTML = statsHTML;
+
+            // Cleaning
+            const cleaningHTML = `
+                <h3>Missing Values</h3>
+                <pre>${JSON.stringify(data.cleaning.missing_values, null, 2)}</pre>
+                <h3>Outliers Detected</h3>
+                <pre>${JSON.stringify(data.cleaning.outliers_detected, null, 2)}</pre>
+            `;
+            document.getElementById('cleaning-content').innerHTML = cleaningHTML;
+
+            // AI Insights
+            const aiHTML = `
+                <div class="ai-insights">
+                    <h3>🤖 AI-Generated Insights</h3>
+                    <p>${data.ai_insights.ai_insights}</p>
+                    <p style="margin-top: 15px; opacity: 0.8; font-size: 0.9em;">
+                        Generated by: ${data.ai_insights.generated_by} | ${new Date(data.ai_insights.timestamp).toLocaleString()}
+                    </p>
+                </div>
+            `;
+            document.getElementById('ai-content').innerHTML = aiHTML;
+        }
+    </script>
+</body>
+</html>
