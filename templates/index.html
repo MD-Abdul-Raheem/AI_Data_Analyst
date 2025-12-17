@@ -566,19 +566,25 @@
                     body: formData
                 });
                 
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Server error:', text);
+                    alert('Error: ' + text.substring(0, 200));
+                    return;
+                }
+                
                 const data = await response.json();
                 console.log('Analysis response:', data);
                 
-                if (!response.ok || data.error) {
-                    alert('Error: ' + (data.error || 'Server error'));
-                    console.error('Error details:', data);
+                if (data.error) {
+                    alert('Error: ' + data.error);
                     return;
                 }
                 
                 analysisResults = data;
                 displayResults(data);
             } catch (error) {
-                alert('Error analyzing file: ' + error.message);
+                alert('Error: ' + error.message);
                 console.error('Exception:', error);
             } finally {
                 document.getElementById('loading').classList.remove('active');
@@ -605,19 +611,25 @@
                     body: formData
                 });
                 
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Server error:', text);
+                    alert('Error: ' + text.substring(0, 200));
+                    return;
+                }
+                
                 const data = await response.json();
                 console.log('Analysis response:', data);
                 
-                if (!response.ok || data.error) {
-                    alert('Error: ' + (data.error || 'Server error'));
-                    console.error('Error details:', data);
+                if (data.error) {
+                    alert('Error: ' + data.error);
                     return;
                 }
                 
                 analysisResults = data;
                 displayResults(data);
             } catch (error) {
-                alert('Error analyzing data: ' + error.message);
+                alert('Error: ' + error.message);
                 console.error('Exception:', error);
             } finally {
                 document.getElementById('loading').classList.remove('active');
